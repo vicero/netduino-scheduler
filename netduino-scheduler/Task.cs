@@ -13,7 +13,8 @@ namespace netduino_scheduler
     {
         public Task(long recurrence)
         {
-            var minimumRecurrence = System.TimeSpan.TicksPerMillisecond * 10;
+            //1ms minimum recurrence
+            var minimumRecurrence = System.TimeSpan.TicksPerMillisecond;
             if (recurrence <= minimumRecurrence)
             {
                 throw new Exception("Recurrence must be greater than " + minimumRecurrence + " ticks");

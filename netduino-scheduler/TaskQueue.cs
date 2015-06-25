@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 
 using Microsoft.SPOT;
+using Microsoft.SPOT.Hardware;
 
 namespace netduino_scheduler
 {
@@ -39,12 +40,16 @@ namespace netduino_scheduler
         /// <summary>
         /// Dequeues a task at the next index
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Next task to run if <see cref="NextOccurrence"/> &lte; <see cref="Utility.GetMachineTime().Ticks"/>; otherwise null </returns>
         public Task Dequeue()
         {
             var task = (Task)_tasks[0];
-            _tasks.RemoveAt(0);
-            return task;
+            if (task.NextOccurrence <= Utility.GetMachineTime().Ticks)
+            {
+                _tasks.RemoveAt(0);
+                return task;
+            }
+            return null;
         }
 
         private readonly ArrayList _tasks = new ArrayList();

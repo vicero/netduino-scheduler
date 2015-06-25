@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 
 using Microsoft.SPOT;
+using Microsoft.SPOT.Hardware;
 
 namespace netduino_scheduler
 {
@@ -11,27 +12,27 @@ namespace netduino_scheduler
     [DebuggerDisplay("Next Occurrence { NextOccurrence }")]
     public abstract class Task
     {
-        public Task(long recurrence)
+        public Task(int recurrence)
         {
             //1ms minimum recurrence
-            var minimumRecurrence = System.TimeSpan.TicksPerMillisecond;
+            var minimumRecurrence = 1;
             if (recurrence <= minimumRecurrence)
             {
-                throw new Exception("Recurrence must be greater than " + minimumRecurrence + " ticks");
+                throw new Exception("Recurrence must be greater than " + minimumRecurrence + " ms");
             }
-            _recurrence = recurrence;
+            _recurrence = recurrence * System.TimeSpan.TicksPerMillisecond;
         }
 
         /// <summary>
         /// Called by <see cref="Scheduler"/>.
         /// </summary>
         /// <remarks>
-        /// Updates <see cref="NextOccurrence"/> after performing <see cref="DoWork"/>
+        /// Updates <see cref="NextOccurrence"/> then performs <see cref="DoWork"/>
         /// </remarks>
         public void Execute()
         {
-            DoWork();
             UpdateNextOccurrence();
+            DoWork();
         }
 
         /// <summary>
@@ -44,13 +45,8 @@ namespace netduino_scheduler
         /// </summary>
         private void UpdateNextOccurrence()
         {
-            _nextOcurrence = Microsoft.SPOT.Hardware.Utility.GetMachineTime().Ticks + _recurrence;
+            _nextOcurrence = Utility.GetMachineTime().Ticks + _recurrence;
         }
-
-        /// <summary>
-        /// Recurrence in ticks
-        /// </summary>
-        public long Recurrence { get { return _recurrence; } }
 
         /// <summary>
         /// Next Occurence in ticks

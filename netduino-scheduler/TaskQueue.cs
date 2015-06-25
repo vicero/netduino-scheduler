@@ -16,31 +16,22 @@ namespace netduino_scheduler
         /// </summary>
         public void Enqueue(Task task)
         {
-            if (_tasks.Count == 0)
+            var taskCount = _tasks.Count;
+            for (int i = 0; i < taskCount; i++)
             {
-                _tasks.Add(task);
-                return;
-            }
-
-            for (int i = 0; i < _tasks.Count; i++)
-            {
-                if (i == _tasks.Count - 1)
-                {
-                    _tasks.Add(task);
-                    break;
-                }
-                else if (task.NextOccurrence <= ((Task)_tasks[i]).NextOccurrence)
+                if (task.NextOccurrence <= ((Task)_tasks[i]).NextOccurrence)
                 {
                     _tasks.Insert(i, task);
-                    break;
+                    return;
                 }
             }
+            _tasks.Add(task);
         }
 
         /// <summary>
-        /// Dequeues a task at the next index
+        /// Dequeues a task at the head of the queue if it is time to run it
         /// </summary>
-        /// <returns>Next task to run if <see cref="NextOccurrence"/> &lte; <see cref="Utility.GetMachineTime().Ticks"/>; otherwise null </returns>
+        /// <returns>Next task to run if <see cref="NextOccurrence"/> &lt;= <see cref="Utility.GetMachineTime().Ticks"/>; otherwise null </returns>
         public Task Dequeue()
         {
             var task = (Task)_tasks[0];

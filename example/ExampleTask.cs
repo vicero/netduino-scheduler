@@ -7,6 +7,8 @@ using netduino_scheduler;
 
 namespace example
 {
+
+    [DebuggerDisplay("{ _name } { NextOccurrence }")]
     internal sealed class ExampleTask : Task
     {
         private string _name;
@@ -14,7 +16,7 @@ namespace example
 
         public ExampleTask(
             string name,
-            long recurrence,
+            int recurrence,
             int wait)
             : base(recurrence)
         {
@@ -24,7 +26,7 @@ namespace example
 
         protected override void DoWork()
         {
-            Debug.Print(_name + " will now wait for " + _wait + "ms");
+            Debug.Print(DateTime.Now.ToString("mm:ss.fff") + ": " + _name + " will now wait for " + _wait + "ms");
             Thread.Sleep(_wait);
         }
     }

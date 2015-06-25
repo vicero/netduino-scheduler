@@ -15,15 +15,13 @@ namespace example
         public static void Main()
         {
             var tasks = new[] {
-                new ExampleTask("A", tpm*1000, 300),
-                new ExampleTask("B", tpm*1000, 400),
-                new ExampleTask("C", tpm*1000, 500),
+                new ExampleTask("A", recurrence: 1000, wait: 100),
+                new ExampleTask("B", recurrence: 5000, wait: 100),
+                new ExampleTask("C", recurrence: 10000, wait: 100)
             };
 
-            var scheduler = new Scheduler(tasks);
+            var scheduler = new Scheduler(tasks, granularityInMilliseconds: 500);
             scheduler.Run();
         }
-
-        public const Int64 tpm = System.TimeSpan.TicksPerMillisecond;
     }
 }

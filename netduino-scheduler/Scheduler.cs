@@ -20,7 +20,7 @@ namespace netduino_scheduler
             _schedulableTasks = schedulableTasks;
             _granularityInMilliseconds = granularityInMilliseconds;
 
-            for (int i = 0; i < _schedulableTasks.Length; i++)
+            for (int i = _schedulableTasks.Length - 1; i >= 0; i--)
             {
                 _taskQueue.Enqueue(_schedulableTasks[i]);
             }
@@ -38,7 +38,11 @@ namespace netduino_scheduler
                 {
                     RunTask(task);
                 }
-                Thread.Sleep(_granularityInMilliseconds);
+                else
+                {
+                    Thread.Sleep(_granularityInMilliseconds);
+                }
+                
             }
         }
 

@@ -13,7 +13,7 @@ Work done by the system is described by the abstract `Task` class.  To schedule 
 ```
 internal sealed class ExampleTask : Task
 {
-	public ExampleTask() : base(recurrence: System.TimeSpan.TicksPerMillisecond * 1000) { }
+	public ExampleTask() : base(recurrence: 1000) { }
 }
 ```
 
@@ -38,9 +38,9 @@ Then call `Run()` and the scheduler will handle running all the tasks for you.
 public static void Main()
 {
     var tasks = new[] {
-        new ExampleTask("A", System.TimeSpan.TicksPerMillisecond*1000, 300),
-        new ExampleTask("B", System.TimeSpan.TicksPerMillisecond*1000, 400),
-        new ExampleTask("C", System.TimeSpan.TicksPerMillisecond*1000, 500),
+        new ExampleTask("A", recurrence: 1000, wait: 100),
+        new ExampleTask("B", recurrence: 5000, wait: 100),
+        new ExampleTask("C", recurrence: 10000, wait: 100),
     };
 
     var scheduler = new Scheduler(tasks);
@@ -51,21 +51,24 @@ public static void Main()
 ## example project debug output
 
 ```
-C will now wait for 500ms
-A will now wait for 300ms
-B will now wait for 400ms
-C will now wait for 500ms
-A will now wait for 300ms
-B will now wait for 400ms
-C will now wait for 500ms
-A will now wait for 300ms
-B will now wait for 400ms
-C will now wait for 500ms
-A will now wait for 300ms
-B will now wait for 400ms
-C will now wait for 500ms
-A will now wait for 300ms
-B will now wait for 400ms
-C will now wait for 500ms
-A will now wait for 300ms
+00:09.469: A will now wait for 100ms
+00:09.575: B will now wait for 100ms
+00:09.677: C will now wait for 100ms
+00:10.780: A will now wait for 100ms
+00:11.883: A will now wait for 100ms
+00:12.986: A will now wait for 100ms
+00:14.089: A will now wait for 100ms
+00:14.691: B will now wait for 100ms
+00:15.294: A will now wait for 100ms
+00:16.397: A will now wait for 100ms
+00:17.499: A will now wait for 100ms
+00:18.602: A will now wait for 100ms
+00:19.705: A will now wait for 100ms
+00:19.807: C will now wait for 100ms
+00:19.910: B will now wait for 100ms
+00:21.013: A will now wait for 100ms
+00:22.116: A will now wait for 100ms
+00:23.218: A will now wait for 100ms
+00:24.321: A will now wait for 100ms
+00:24.924: B will now wait for 100ms
 ```

@@ -1,7 +1,7 @@
-using System;
-using System.Threading;
-
 using Microsoft.SPOT;
+using System;
+using System.Collections;
+using System.Threading;
 
 namespace netduino_scheduler
 {
@@ -19,7 +19,6 @@ namespace netduino_scheduler
         {
             _schedulableTasks = schedulableTasks;
             _granularityInMilliseconds = granularityInMilliseconds;
-
             for (int i = _schedulableTasks.Length - 1; i >= 0; i--)
             {
                 _taskQueue.Enqueue(_schedulableTasks[i]);
@@ -34,6 +33,7 @@ namespace netduino_scheduler
             while (true)
             {
                 var task = _taskQueue.Dequeue();
+
                 if (task != null)
                 {
                     RunTask(task);
@@ -42,7 +42,6 @@ namespace netduino_scheduler
                 {
                     Thread.Sleep(_granularityInMilliseconds);
                 }
-                
             }
         }
 

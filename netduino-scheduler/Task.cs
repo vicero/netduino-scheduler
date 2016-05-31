@@ -9,10 +9,10 @@ namespace netduino_scheduler
     /// <summary>
     /// Task that will be scheduled and ran by the scheduler
     /// </summary>
-    [DebuggerDisplay("Next Occurrence { NextOccurrence }")]
+    [DebuggerDisplay("{Name} Next Occurrence { NextOccurrence }")]
     public abstract class Task
     {
-        public Task(int recurrence)
+        public Task(int recurrence, string name, string category, int taskLength)
         {
             //1ms minimum recurrence
             var minimumRecurrence = 1;
@@ -20,7 +20,14 @@ namespace netduino_scheduler
             {
                 throw new Exception("Recurrence must be greater than " + minimumRecurrence + " ms");
             }
+            if (recurrence <= taskLength)
+            {
+                throw new Exception("recurrence must be greater than taskLength");
+            }
+            _category = category;
+            _name = name;
             _recurrence = recurrence * System.TimeSpan.TicksPerMillisecond;
+            _taskLength = taskLength > 0 ? taskLength * System.TimeSpan.TicksPerMillisecond : NoLength;
         }
 
         /// <summary>
@@ -31,9 +38,14 @@ namespace netduino_scheduler
         /// </remarks>
         public void Execute()
         {
-            UpdateNextOccurrence();
+            ComputeCompleteAndNextOccurrence();
             DoWork();
         }
+
+        /// <summary>
+        /// Complete callback.
+        /// </summary>
+        public abstract void OnComplete();
 
         /// <summary>
         /// The work to complete.
@@ -41,19 +53,45 @@ namespace netduino_scheduler
         protected abstract void DoWork();
 
         /// <summary>
-        /// Sets the <see cref="NextOccurrence"/> to <see cref="DateTime.Now.Ticks"/> + <see cref="Recurrence"/>.
+        /// Sets <see cref="Complete"/> and <see cref="NextOccurrence"/> to <see cref="DateTime.Now.Ticks"/> + <see cref="Recurrence"/>.
         /// </summary>
-        private void UpdateNextOccurrence()
+        private void ComputeCompleteAndNextOccurrence()
         {
-            _nextOcurrence = Utility.GetMachineTime().Ticks + _recurrence;
+            _complete = Utility.GetMachineTime().Ticks + _taskLength;
+            _nextOcurrence = Utility.GetMachineTime().Ticks + _recurrence + _taskLength;
         }
 
         /// <summary>
-        /// Next Occurence in ticks
+        /// Category of the task.
+        /// </summary>
+        /// <remarks>
+        /// Tasks in the same category will run exclusively.
+        /// </remarks>
+        public string Category { get { return _category; } }
+
+        /// <summary>
+        /// Complete time in ticks.
+        /// </summary>
+        public long Complete { get { return _complete; } }
+
+        /// <summary>
+        /// Name of the task.
+        public string Name { get { return _name; } }
+
+        /// <summary>
+        /// Next Occurence in ticks.
         /// </summary>
         public long NextOccurrence { get { return _nextOcurrence; } }
-        
+
+        public long TaskLength { get { return _taskLength; } }
+
+        public const long NoLength = -1;
+
+        private string _category;
+        private long _complete;
+        private string _name;
         private long _nextOcurrence;
         private long _recurrence;
+        private long _taskLength;
     }
 }
